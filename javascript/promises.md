@@ -359,7 +359,7 @@ If you think microtasks may help solve this problem, see the [microtask guide] t
 [Using Promises (MDN)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises)<br>
 [The `Promise` Object (MDN)](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)<br>
 [JavaScript Promises (Google Web Fundamentals)](https://developers.google.com/web/fundamentals/primers/promises#whats-all-the-fuss-about)<br>
-[Promise, aysnc/await (Javascript.info)](https://javascript.info/promise-basics)
+[Promise, async/await (Javascript.info)](https://javascript.info/promise-basics)
 
 <!-- Reference Links -->
 [arrow functions]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions "Arrow function expressions"

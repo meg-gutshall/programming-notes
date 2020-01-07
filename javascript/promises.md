@@ -323,9 +323,7 @@ console.log("Data fetched");
 
 Executing this code twice in a row gives the results shown in the table below:
 
-**Results when data isn't cached (left) vs. when it is found in the cache (right)**
-
-| **Data isn't cached** | **Data is cached** |
+| Data isn't cached | Data is cached |
 | --- | --- |
 | Fetching data | Fetching data |
 | Data fetched | Loaded data |

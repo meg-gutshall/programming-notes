@@ -9,7 +9,7 @@ Imagine a function, `createAudioFileAsync()`, which asynchronously generates a s
 
 Here's some code that uses `createAudioFileAsync()`:
 
-```javascript
+```js
 function successCallback(result) {
   console.log("Audio file ready at URL: " + result);
 }
@@ -25,13 +25,13 @@ createAudioFileAsync(audioSettings, successCallback, failureCallback);
 
 If `createAudioFileAsync()` were rewritten to return a promise, using it could be as simple as this:
 
-```javascript
+```js
 createAudioFileAsync(audioSettings).then(successCallback, failureCallback);
 ```
 
 That's shorthand for:
 
-```javascript
+```js
 const promise = createAudioFileAsync(audioSettings);
 promise.then(successCallback, failureCallback);
 ```
@@ -52,14 +52,14 @@ A common need is to execute two or more asynchronous operations back to back whe
 
 The `then()` function returns a **new promise**, different from the original:
 
-```javascript
+```js
 const promise = doSomething();
 const promise2 = promise.then(successCallback, failureCallback);
 ```
 
 or
 
-```javascript
+```js
 const promise2 = doSomething().then(successCallback, failureCallback);
 ```
 
@@ -69,7 +69,7 @@ Basically, each promise represents the completion of another asynchronous step i
 
 In the old days, doing several asynchronous operations in a row would lead to the classic callback pyramid of doom:
 
-```javascript
+```js
 doSomething(function(result) {
   doSomethingElse(results, function(newResult) {
     doThirdThing(newResult, function(finalResult) {
@@ -81,7 +81,7 @@ doSomething(function(result) {
 
 With modern functions, we attach our callbacks to the returned promises, forming a promise chain:
 
-```javascript
+```js
 doSomething()
   .then(function(result) {
     return doSomethingElse(result);
@@ -97,7 +97,7 @@ doSomething()
 
 The arguments to `then` are optional, and `catch(failureCallback)` is short for `then(null, failureCallback)`. You might see this expressed with [arrow functions] instead:
 
-```javascript
+```js
 doSomething()
   .then(result => doSomethingElse(result))
   .then(newResult => doThirdThing(newResult))
@@ -117,7 +117,7 @@ It's possible to chain _after_ a failure, i.e. a `catch`, which is useful to acc
 
 You might recall seeing `failureCallback` three times in the pyramid of doom earlier, compared to only once at the end of the promise chain:
 
-```javascript
+```js
 doSomething()
   .then(result => doSomethingElse(result))
   .then(newResult => doThirdThing(newResult))
@@ -127,7 +127,7 @@ doSomething()
 
 If there's an exception, the browser will look down the chain for `.catch()` handlers or `onRejected`. This is very much modeled after how synchronous code works:
 
-```javascript
+```js
 try {
   const result = syncDoSomething();
   const newResult = syncDoSomethingElse(result);
@@ -140,7 +140,7 @@ try {
 
 This symmetry with asynchronous code culminates in the [`async`/`await`] syntactic sugar in ECMAScript 2017:
 
-```javascript
+```js
 async function funk() {
   try {
     const result = await doSomething();
@@ -173,7 +173,7 @@ These make it possible to offer fallback error handling promises, as well as to 
 
 One case of special usefulness: when writing code for Node.js, it's common that modules you include in your project may have unhandled rejected promises. These get logged to the console by the Node runtime. You can capture these for analysis and handling by your code—or just to avoid having them cluttering up your output—by adding a handler for the [`unhandledrejection`] event, like this:
 
-```javascript
+```js
 window.addEventListener("unhandledrejection", event => {
   /* You might start here by adding code to examine the promise specified by event.promise and the reason in event.reason */
 
@@ -191,7 +191,7 @@ A [`Promise`] can be created from scratch using its constructor. This should be 
 
 In an ideal world, all asynchronous functions would already return promises. Unfortunately, some APIs still expect success and/or failure callbacks to be passed in the old way. The most obvious example is the [`setTimeout()`] function:
 
-```javascript
+```js
 setTimeout(() => saySomething("10 seconds passed"), 10*1000);
 ```
 
@@ -199,7 +199,7 @@ Mixing old-style callbacks and promises is problematic. If `saySomething()` fail
 
 Luckily we can wrap `setTimeout` in a promise. Best practice is to wrap problematic functions at the lowest possible level, and the never call them directly again:
 
-```javascript
+```js
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 wait(10*1000).then(() => saySomething("10 second")).catch(failureCallback);
@@ -215,14 +215,14 @@ Basically, the promise constructor takes an executor function that lets us resol
 
 We can start operations in parallel and wait for them to finish like this:
 
-```javascript
+```js
 Promise.all([func1(), func2(), func3()])
   .then(([result1, result2, result3]) => { /* use result1, result2 and result3 */ });
 ```
 
 Sequential composition is possible using some clever JavaScript:
 
-```javascript
+```js
 [func1, func2, func3].reduce((p, f) => p.then(f), Promise.resolve())
   .then(result3 => { /* use result3 */ });
 ```
@@ -231,21 +231,21 @@ Basically, we reduce an array of asynchronous functions down to a promise chain 
 
 This can be made into a reusable compose function, which is common in functional programming:
 
-```javascript
+```js
 const applyAsync = (acc, val) => acc.then(val);
 const composeAsync = (...funcs) => x => funcs.reduce(applyAsync, Promise.resolve(x));
 ```
 
 The `composeAsync()` function will accept any number of functions as arguments, and will return a new function that accepts an initial value to be passed through the composition pipeline:
 
-```javascript
+```js
 const transformData = composeAsync(func1, func2, func3);
 const result3 = transformData(data);
 ```
 
 In ECMAScript 2017, sequential composition can be done more simply with async/await:
 
-```javascript
+```js
 let result;
 for (const f of [func1, func2, func3]) {
   result = await f(result);
@@ -257,14 +257,14 @@ for (const f of [func1, func2, func3]) {
 
 To avoid surprises, functions passed to [`then()`] will never be called synchronously, even with an already-resolved promise:
 
-```javascript
+```js
 Promise.resolve().then(() => console.log(2));
 console.log(1); // 1, 2
 ```
 
 Instead of running immediately, the passed-in function is put on a microtask queue, which means it runs later when the queue is emptied at the end of the current run of the JavaScript event loop, i.e. pretty soon:
 
-```javascript
+```js
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 wait().then(() => console.log(4));
@@ -278,7 +278,7 @@ Simple promise chains are best kept flat without nesting, as nesting can be a re
 
 Nesting is a control structure to limit the scope of `catch` statements. Specifically, a nested `catch` only catches failures in its scope and below, not errors higher up the chain outside the nested scope. When used correctly, the gives greater precision in error recovery:
 
-```javascript
+```js
 doSomethingCritical()
   .then(result => doSomethingOptional(result)
     .then(optionalResult => doSomethingExtraNice(optionalResult))
@@ -297,7 +297,7 @@ If you run into situations in which you have promises and tasks (such as events 
 
 One situation in which microtasks can be used to ensure that the ordering of execution is always consistent is when promises are used in one clause of an `if...else` statement (or other conditional statement), but not the other clause. Conside code such as this:
 
-```javascript
+```js
 customElement.prototype.getData = url => {
   if (this.cache[url]) {
     this.data = this.cache[url];
@@ -314,7 +314,7 @@ customElement.prototype.getData = url => {
 
 The problem introduced here is that by using a task in one branch of the `if...else` statement (in the case in which the image is available in the cache) but having promises involved in the `else` clause, we have a situation in which the order of operations can vary; for example as seen below.
 
-```javascript
+```js
 element.addEventListener("load", () => console.log("Loaded data"));
 console.log("Fetching data...");
 element.getData();
@@ -333,7 +333,7 @@ Even worse, sometimes the element's `data` property will be set and other times 
 
 We can ensure consistent ordering of these operations by using a microtask in the `if` clause to balance the two clauses:
 
-```javascript
+```js
 customElement.prototype.getData = url => {
   if (this.cache[url]) {
     queueMicrotask(() => {
